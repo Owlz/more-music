@@ -1,0 +1,22 @@
+{
+  "name": "more-music",
+  "version": "1.0.0",
+  "description": "MQTT based serverless music suggestor",
+  "main": "moremusic.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JustAnOwlz/more-music.git"
+  },
+  "author": "",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/JustAnOwlz/more-music/issues"
+  },
+  "homepage": "https://github.com/JustAnOwlz/more-music#readme",
+  "dependencies": {
+    "amqplib": "^0.5.3"
+  }
+}
