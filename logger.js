@@ -3,12 +3,12 @@ var amqp = require('amqplib');
 const QUEUE = 'iot/logger'
 
 let main = async (ip) => {
-	let connection = await amqp.connect(`amqp://guest:guest@${ip}:5672`);
+	const connection = await amqp.connect(`amqp://guest:guest@${ip}:5672`);
 	process.once('SIGINT', () => connection.close());
 
 	const channel = await connection.createChannel();
-	const isAsserted = await channel.assertQueue(QUEUE);
-	channel.consume(QUEUE, (msg) => {
+	await channel.assertQueue(QUEUE,{durable:false});
+	await channel.consume(QUEUE, (msg) => {
 		if (msg !== null) {
 			console.log(`[${new Date().toISOString()}] -> ${msg.content.toString()}`);
 			channel.ack(msg);

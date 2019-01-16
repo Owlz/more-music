@@ -45,8 +45,8 @@ let fetchAPIs = async function(song) {
 		const linksFound = await searchYouTube(songsFound);
 		return linksFound;
 	} catch (e) {
+		sendFeedback(`Error while fetching`)
 		throw (`Error during the fetchAPIs call: ${e}`);
-		return e;
 	}
 }
 
@@ -62,6 +62,8 @@ let sendIFTTT = async function(links) {
 		parameters[`value3`] = `${i+1}/${links.length}`;
 		promisesMade.push(sendRequest(reqUrl, parameters));
 	}
+
+	await sendFeedback(`IFTTT done`)
 
 	return await Promise.all(promisesMade);
 }
@@ -89,6 +91,7 @@ let searchLastFM = async function(song) {
 		songs.push(`${jResponse.track[`${i}`].artist.name} - ${jResponse.track[`${i}`].name}`)
 	}
 
+	await sendFeedback(`LastFM done`)
 	return songs;
 }
 
@@ -120,37 +123,36 @@ let searchYouTube = async function(songNames) {
 		});
 	}
 
+	await sendFeedback(`Youtube done`)
 	return links;
 
 }
 
 let sendFeedback = async (msg) => {
-	try{
-		let connection = await amqp.connect(`amqp://guest:guest@${IP}:5672`);
-		let channel = await conn.createChannel();
-		var ok = await ch.assertQueue(QUEUE_LOGGER, {durable: false});
-
-		channel.sendToQueue(QUEUE_LOGGER, Buffer.from(msg));
-		console.log(" [x] Message sent: '%s'", msg);
-		ch.close();
-	} finally{
-		conn.close();
-	}
+	const connection = await amqp.connect(`amqp://guest:guest@${IP}:5672`);
+	const ch = await connection.createChannel()
+	await ch.assertQueue(QUEUE_LOGGER, {durable: false});
+	await ch.sendToQueue(QUEUE_LOGGER, Buffer.from(msg));
 }
 
 exports.handler = function(context, event) {
 	let _event = JSON.parse(JSON.stringify(event));
 	let _data = String.fromCharCode(..._event.body.data);
 
-	const song = _data.split(/\w*-\w*/g).map(x => x.trim());
+	const song = _data.split('-').map(x => x.trim());
 
 	if (song.length != 2) {
-		//TODO: lanciare errore, magari con il logger
+		sendFeedback(`Error while loading the song, ${_data} is not valid`)
+			.then(x => x)
+		return
+	}else{
+		sendFeedback(`Song loaded: ${song.join(' - ')}`)
+			.then(x => x)
 	}
-	sendFeedback(song.toString())
 
 	fetchAPIs(song)
 		.then(links => sendIFTTT(links))
 		.then(output => context.callback("Done"))
 		.catch(err => context.callback("Error: ", err));
+
 }
