@@ -3,6 +3,8 @@ Finding a good song is harder than it looks; usually we must go trough tons of d
 
 More Music is a simple function made for [Nuclio](https://nuclio.io), an open source and managed serverless platform that we can run on our home server. It uses [RabbitMQ](https://www.rabbitmq.com/) as broker to share MQTT messages around.
 
+This was the final project for the Serverless Computing class at [Università degli Studi di Salerno](https://www.unisa.it/), we used nuclio to simulate a fully fledged serverless infrastructure
+
 ### Prerequisites
 - [Docker](https://www.docker.com/)
 - [Node.js](https://nodejs.org/) if you want to run the `logger.js` otherwise is not necessary
