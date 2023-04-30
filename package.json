@@ -17,6 +17,6 @@
   },
   "homepage": "https://github.com/JustAnOwlz/more-music#readme",
   "dependencies": {
-    "amqplib": "^0.5.3"
+    "amqplib": "^0.10.3"
   }
 }
